@@ -1,0 +1,33 @@
+.local-harness/
+.agents/
+.claude/
+.codex/
+AGENTS.md
+.DS_Store
+**/.DS_Store
+
+# Harness 本地资料
+/skills/*/docs/
+/skills/*/tests/
+/skills/*/skill/archive/
+/skills/*/README.md
+/skills/zhimeng-md-hthl/
+
+# 临时和生成文件
+*.tmp
+*.temp
+*.log
+.cache/
+tmp/
+temp/
+
+# 运行时缓存
+__pycache__/
+*.py[cod]
+node_modules/
+
+# 本地抓取产物
+.firecrawl/
+screenshots/
+captures/
+scrapes/

@@ -1,0 +1,4 @@
+interface:
+  display_name: "JDBC ER HTML"
+  short_description: "从指定 MySQL 库只读生成并校验 ER HTML"
+  default_prompt: "从指定 MySQL 库通过 JDBC 读取 information_schema，生成经过二次校验的 ER HTML。"

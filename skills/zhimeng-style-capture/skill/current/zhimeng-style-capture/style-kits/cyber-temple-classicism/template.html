@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cyber Temple Classicism Template</title>
+  <style>
+    :root {
+      --ctc-blue: #0000f2;
+      --ctc-paper: #f7f7f2;
+      --ctc-white: #ffffff;
+      --ctc-acid: #edff45;
+      --ctc-paper-line: rgba(247, 247, 242, .34);
+      --ctc-blue-line: rgba(0, 0, 242, .28);
+      --ctc-display: Georgia, "Times New Roman", serif;
+      --ctc-mono: "Courier Prime", "Courier New", monospace;
+      --ctc-frame: clamp(18px, 2vw, 32px);
+      --ctc-gutter: clamp(28px, 6vw, 128px);
+      --ctc-gap: clamp(18px, 2.4vw, 34px);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--ctc-blue);
+      color: var(--ctc-paper);
+      font-family: var(--ctc-display);
+    }
+
+    .shell {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: var(--ctc-frame);
+    }
+
+    .mono {
+      font-family: var(--ctc-mono);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-size: clamp(.68rem, .85vw, .9rem);
+    }
+
+    .nav {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: var(--ctc-gap);
+      padding: clamp(18px, 3vw, 44px) var(--ctc-gutter);
+      text-transform: uppercase;
+    }
+
+    .nav-side {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .nav a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .brand {
+      text-align: center;
+      font-size: clamp(1.4rem, 2.4vw, 2.6rem);
+      line-height: .9;
+    }
+
+    .hero {
+      min-height: min(920px, 92vh);
+      display: grid;
+      grid-template-columns: minmax(0, .85fr) minmax(280px, 1.15fr);
+      align-items: center;
+      gap: var(--ctc-gap);
+      padding: clamp(68px, 9vw, 140px) var(--ctc-gutter);
+      overflow: hidden;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(4.1rem, 8.1vw, 9.8rem);
+      line-height: .88;
+      font-weight: 400;
+      letter-spacing: .025em;
+      text-transform: uppercase;
+    }
+
+    .button {
+      display: inline-flex;
+      margin-top: 2.2rem;
+      padding: .82rem 1.45rem .72rem;
+      background: var(--ctc-paper);
+      color: var(--ctc-blue);
+      font-family: var(--ctc-mono);
+      font-size: .78rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .art {
+      min-height: clamp(320px, 46vw, 760px);
+      border: 1px solid var(--ctc-paper-line);
+      background:
+        repeating-radial-gradient(circle at 54% 50%, transparent 0 18px, var(--ctc-paper-line) 19px 20px),
+        linear-gradient(135deg, transparent 0 38%, var(--ctc-paper-line) 39% 40%, transparent 41%),
+        var(--ctc-blue);
+    }
+
+    .showcase {
+      margin: 0 var(--ctc-gutter) clamp(38px, 6vw, 92px);
+      border: 1px solid var(--ctc-paper-line);
+      background: rgba(247, 247, 242, .1);
+      padding: clamp(14px, 2vw, 28px);
+    }
+
+    .screen {
+      min-height: clamp(220px, 38vw, 560px);
+      background: rgba(247, 247, 242, .84);
+      color: var(--ctc-blue);
+      display: grid;
+      place-items: center;
+    }
+
+    .features {
+      background: var(--ctc-white);
+      color: var(--ctc-blue);
+      padding: clamp(38px, 5vw, 76px) var(--ctc-gutter);
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(42px, 5vw, 92px) var(--ctc-gap);
+    }
+
+    .feature h2 {
+      margin: 1.3rem 0;
+      font-size: clamp(2.1rem, 3.3vw, 4rem);
+      line-height: .96;
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+
+    .feature-media {
+      aspect-ratio: 1.16 / 1;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 7px, rgba(0,0,242,.18) 8px 9px),
+        repeating-linear-gradient(90deg, transparent 0 13px, rgba(0,0,242,.16) 14px 15px),
+        var(--ctc-blue);
+    }
+
+    .copy {
+      font-family: var(--ctc-mono);
+      font-size: clamp(.72rem, .85vw, .88rem);
+      line-height: 1.45;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .wordmark {
+      margin: 0;
+      font-size: clamp(6rem, 18vw, 22rem);
+      line-height: .72;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    @media (max-width: 760px) {
+      .nav,
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .nav-side {
+        justify-content: center;
+      }
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+      h1 {
+        font-size: clamp(3.8rem, 18vw, 5.2rem);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <nav class="nav">
+      <div class="nav-side">
+        <a href="#">Index</a>
+        <a href="#">Docs</a>
+      </div>
+      <a class="brand" href="#">PROJECT<br>NAME</a>
+      <div class="nav-side">
+        <a href="#">Portal</a>
+        <a href="#">Install</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div>
+        <p class="mono">OPEN SOURCE · LOCAL FIRST</p>
+        <h1>THE TOOL<br>THAT THINKS<br>WITH YOU</h1>
+        <a class="button" href="#">Download Preview</a>
+      </div>
+      <div class="art" aria-label="Generated classical monochrome artwork placeholder"></div>
+    </section>
+
+    <section class="showcase">
+      <div class="screen">
+        <p class="mono">Product screenshot / generated demo frame</p>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="feature-grid">
+        <article class="feature">
+          <p class="mono">#1 CONNECT</p>
+          <h2>Lives Everywhere</h2>
+          <div class="feature-media"></div>
+          <p class="copy">One system, many surfaces, shared context.</p>
+        </article>
+        <article class="feature">
+          <p class="mono">#2 REMEMBER</p>
+          <h2>Persistent Memory</h2>
+          <div class="feature-media"></div>
+          <p class="copy">It keeps the working trail and learns the craft.</p>
+        </article>
+        <article class="feature">
+          <p class="mono">#3 AUTOMATE</p>
+          <h2>Focused Rituals</h2>
+          <div class="feature-media"></div>
+          <p class="copy">Scheduled work without breaking attention.</p>
+        </article>
+      </div>
+      <p class="wordmark">PROJECT</p>
+    </section>
+  </main>
+</body>
+</html>

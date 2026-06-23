@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>__TITLE__</title>
+  <style>
+    :root {
+      --paper: #f7f2e5;
+      --paper-soft: #fbf7ec;
+      --paper-deep: #efe8d5;
+      --ink: #1f1a14;
+      --muted: #5a4a38;
+      --muted-2: #8b7b62;
+      --rule: #c9bfa8;
+      --rule-soft: #e5ddc8;
+      --accent: #c15f3c;
+      --accent-deep: #8b3f25;
+      --mysql: #d66f48;
+      --pg: #496d8f;
+      --oss: #99733e;
+      --elk: #675f6f;
+      --redis: #9d4e44;
+      --weak: rgba(153, 115, 62, 0.58);
+      --shadow: 0 22px 54px rgba(65, 46, 20, 0.14);
+      --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      --sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif;
+      --serif: "Source Han Serif SC", "Noto Serif SC", Georgia, serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 84% 0%, rgba(193, 95, 60, 0.11), transparent 26rem),
+        linear-gradient(180deg, #f9f4e9 0%, var(--paper) 48%, #f4eddb 100%);
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+    button, input { font: inherit; }
+    .app { display: grid; grid-template-columns: 320px 1fr; height: 100vh; min-width: 1080px; }
+    .sidebar { border-right: 1px solid var(--rule); background: rgba(251,247,236,.88); backdrop-filter: blur(16px); padding: 22px 18px; overflow: auto; }
+    .brand { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--rule-soft); padding-bottom: 18px; }
+    .eyebrow { color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .17em; text-transform: uppercase; }
+    h1 { font-family: var(--serif); font-size: 27px; line-height: 1.12; margin: 8px 0 6px; overflow-wrap: anywhere; }
+    .subtitle { color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .tag { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border: 1px solid rgba(193,95,60,.38); background: #fff7eb; color: var(--accent-deep); border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0; }
+    .metric { border: 1px solid var(--rule-soft); background: rgba(255,252,244,.7); padding: 12px; min-height: 70px; }
+    .metric.alert { border-color: rgba(173,53,44,.54); background: #fff0e9; box-shadow: inset 3px 0 0 #ad352c; }
+    .metric.alert b, .metric.alert span { color: #ad352c; }
+    .metric b { display: block; font-size: 24px; line-height: 1; margin-bottom: 6px; overflow-wrap: anywhere; }
+    .metric span { color: var(--muted); font-size: 12px; }
+    .control-title { margin: 18px 0 8px; color: var(--accent-deep); font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .segmented { display: grid; gap: 7px; }
+    .segmented button, .toolbar button, .list-button { border: 1px solid var(--rule); background: rgba(255,251,241,.82); color: var(--ink); min-height: 34px; padding: 7px 10px; cursor: pointer; text-align: left; border-radius: 6px; }
+    .segmented button:hover, .toolbar button:hover, .list-button:hover { background: #fff9ed; border-color: rgba(193,95,60,.62); }
+    .segmented button.active, .toolbar button.active { background: var(--accent); border-color: var(--accent); color: white; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 7px; }
+    .toolbar button { text-align: center; min-width: 40px; }
+    .search { width: 100%; height: 36px; border: 1px solid var(--rule); background: #fffaf0; color: var(--ink); border-radius: 6px; padding: 0 10px; outline: none; }
+    .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(193,95,60,.14); }
+    .legend { display: grid; gap: 7px; font-size: 12px; color: var(--muted); }
+    .legend-row { display: grid; grid-template-columns: 16px 1fr; gap: 8px; align-items: center; }
+    .swatch { width: 16px; height: 10px; border-radius: 999px; background: var(--rule); }
+    .swatch.mysql { background: var(--mysql); }
+    .swatch.pg { background: var(--pg); }
+    .swatch.oss { background: var(--oss); }
+    .swatch.elk { background: var(--elk); }
+    .swatch.redis { background: var(--redis); }
+    .swatch.weak { background: repeating-linear-gradient(90deg, var(--weak) 0 4px, transparent 4px 8px); border: 1px solid var(--weak); }
+    .table-list { display: grid; gap: 7px; margin-top: 8px; padding-bottom: 28px; }
+    .list-button { display: grid; grid-template-columns: 1fr auto; gap: 8px; width: 100%; }
+    .list-button strong { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
+    .list-button span { color: var(--muted); font-size: 12px; }
+    .main { display: grid; grid-template-rows: auto 1fr; min-width: 0; min-height: 0; }
+    .topbar { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; padding: 18px 24px 14px; border-bottom: 1px solid var(--rule); background: rgba(247,242,229,.82); backdrop-filter: blur(14px); }
+    .topbar h2 { margin: 0 0 4px; font-family: var(--serif); font-size: 24px; }
+    .topbar p { margin: 0; color: var(--muted); font-size: 13px; }
+    .status-line { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-wrap: wrap; max-width: 680px; }
+    .status-pill { border: 1px solid var(--rule); background: #fff8ec; color: var(--muted); padding: 5px 9px; border-radius: 999px; font-size: 12px; white-space: nowrap; }
+    .status-pill.alert-pill { border-color: rgba(173,53,44,.45); background: #fff0e9; color: #ad352c; }
+    .stage-wrap { min-height: 0; overflow: hidden; position: relative; }
+    .stage { position: absolute; inset: 0; overflow: hidden; cursor: grab; background-image: linear-gradient(rgba(139,63,37,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(139,63,37,.05) 1px, transparent 1px); background-size: 28px 28px; }
+    .stage.dragging { cursor: grabbing; }
+    .world { position: absolute; width: 2300px; height: 2400px; transform-origin: 0 0; transition: transform .12s ease; }
+    .domain, .external-boundary { position: absolute; border: 1.5px dashed rgba(139,122,93,.46); background: rgb(244,239,223); border-radius: 10px; pointer-events: none; box-shadow: inset 0 3px 0 rgba(139,122,93,.24), 0 8px 24px rgba(65,46,20,.05); }
+    .external-boundary { background: rgba(255,251,241,.62); }
+    .domain h3, .external-boundary h3 { margin: 0; position: absolute; top: 9px; left: 12px; padding: 6px 9px; border: 1px dashed rgba(139,122,93,.46); border-radius: 6px; background: rgb(244,239,223); color: #6c5b45; font-size: 12px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; box-shadow: 0 5px 14px rgba(65,46,20,.1); z-index: 30; }
+    .external-note { position: absolute; left: 14px; top: 52px; right: 14px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .edges { position: absolute; inset: 0; width: 2300px; height: 2400px; pointer-events: none; overflow: visible; z-index: 1; }
+    .edge { fill: none; stroke: rgba(139,63,37,.72); stroke-width: 1.9; filter: drop-shadow(0 0 2px rgba(255,248,236,.95)); }
+    .edge.standard { stroke: rgba(62,107,79,.58); stroke-width: 2; stroke-dasharray: 7 6; }
+    .edge.highlight { stroke: #ad352c; stroke-width: 3.2; stroke-dasharray: none; }
+    .edge-label { fill: var(--accent-deep); font: 11px var(--mono); paint-order: stroke; stroke: #fff8ec; stroke-width: 4; stroke-linejoin: round; opacity: .92; }
+    .node { position: absolute; width: 240px; border: 1px solid var(--rule); background: #fffaf0; box-shadow: 0 9px 26px rgba(65,46,20,.11); border-radius: 8px; overflow: hidden; z-index: 10; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease, opacity .16s ease; }
+    .node:hover { border-color: var(--accent); box-shadow: 0 14px 32px rgba(65,46,20,.18); transform: translateY(-1px); }
+    .node.dim { opacity: .22; }
+    .node.selected { border-color: #ad352c; box-shadow: 0 0 0 3px rgba(173,53,44,.16), 0 18px 38px rgba(65,46,20,.2); z-index: 20; }
+    .node-header { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: start; padding: 10px 11px; border-left: 6px solid var(--mysql); border-bottom: 1px solid var(--rule-soft); background: rgba(239,232,213,.54); }
+    .node-title { margin: 0; font: 700 13px/1.1 var(--mono); overflow-wrap: anywhere; }
+    .node-caption { color: var(--muted); font-size: 12px; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .badge { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: #fff5e8; color: var(--accent-deep); border: 1px solid rgba(193,95,60,.34); font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .fields { display: grid; font-size: 12px; }
+    .world:not(.view-compact) .field:nth-child(n+5) { display: none; }
+    .field { display: grid; grid-template-columns: 18px 1fr auto; gap: 7px; align-items: center; min-height: 24px; padding: 4px 9px; border-bottom: 1px solid rgba(229,221,200,.78); }
+    .key { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border: 1px solid var(--rule); border-radius: 50%; color: var(--muted); font-size: 9px; font-weight: 900; }
+    .key.pk { border-color: rgba(173,53,44,.48); background: #fff0e9; color: #ad352c; }
+    .key.uk { border-color: rgba(73,109,143,.45); background: #edf3f8; color: var(--pg); }
+    .key.weak { border-color: rgba(153,115,62,.55); background: #fff7df; color: #a9822c; }
+    .field-name { font-family: var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .field-type { color: var(--muted); font-family: var(--mono); font-size: 10px; white-space: nowrap; }
+    .world.view-compact .node { width: 220px; }
+    .world.view-compact .fields, .world.view-compact .node-footer { display: none; }
+    .world.view-compact .node-header { border-bottom: 0; }
+    .node-footer { display: flex; justify-content: space-between; gap: 8px; padding: 7px 10px; color: var(--muted); background: rgba(247,242,229,.72); font-size: 11px; }
+    .detail { position: absolute; right: 18px; bottom: 18px; width: 420px; max-height: 48vh; overflow: auto; border: 1px solid var(--rule); background: rgba(255,251,241,.94); box-shadow: var(--shadow); border-radius: 8px; padding: 14px; backdrop-filter: blur(14px); overscroll-behavior: contain; }
+    .detail:focus { outline: 3px solid rgba(193,95,60,.22); border-color: var(--accent); }
+    .detail h3 { margin: 0 0 8px; font: 700 15px var(--mono); overflow-wrap: anywhere; }
+    .detail p { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+    .detail table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .detail th, .detail td { border-top: 1px solid var(--rule-soft); padding: 6px 4px; text-align: left; vertical-align: top; }
+    .detail th { color: var(--accent-deep); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    code { font-family: var(--mono); font-size: 11px; }
+    .empty { color: var(--muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div>
+          <div class="eyebrow">JDBC 快照 · 真实库结构</div>
+          <h1 id="docTitle">全局 ER 图</h1>
+          <div class="subtitle">基于 JDBC 只读快照生成，并通过第二次拉取结果校验。外部存储只作为数据落点边界说明。</div>
+        </div>
+        <span class="tag">JDBC</span>
+      </div>
+      <section class="metrics" id="metrics"></section>
+      <div class="control-title">视图模式</div>
+      <div class="segmented">
+        <button class="active" data-view="domain">业务域分区图</button>
+        <button data-view="storage">数据落点与协作图</button>
+        <button data-view="compact">演示紧凑图</button>
+      </div>
+      <div class="control-title">画布</div>
+      <div class="toolbar">
+        <button data-zoom="out">-</button>
+        <button data-zoom="reset">100%</button>
+        <button data-zoom="in">+</button>
+        <button data-action="fit">全貌</button>
+      </div>
+      <div class="control-title">搜索</div>
+      <input class="search" id="search" placeholder="搜索表名 / 字段 / 说明" />
+      <div class="control-title">图例</div>
+      <div class="legend">
+        <div class="legend-row"><span class="swatch mysql"></span><span>MySQL：本次实测 schema 真源</span></div>
+        <div class="legend-row"><span class="swatch pg"></span><span>PostgreSQL + pgvector：外部向量落点说明</span></div>
+        <div class="legend-row"><span class="swatch oss"></span><span>OSS：文件本体外部落点说明</span></div>
+        <div class="legend-row"><span class="swatch elk"></span><span>ELK：日志 / Trace 外部落点说明</span></div>
+        <div class="legend-row"><span class="swatch redis"></span><span>Redis：缓存 / 运行态边界说明</span></div>
+        <div class="legend-row"><span class="swatch weak"></span><span>多态逻辑 FK：合法特殊关系，详情中列出</span></div>
+        <div class="legend-row"><span class="swatch weak"></span><span>非规范关联注释：只提示，不画线</span></div>
+      </div>
+      <div class="control-title">表清单</div>
+      <div class="table-list" id="tableList"></div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2 id="viewTitle">业务域分区图</h2>
+          <p id="viewDesc">按实测表名与字段语义分区；关系线只来自注释逻辑 FK。</p>
+        </div>
+        <div class="status-line">
+          <span class="status-pill">库名: <b id="databaseName"></b></span>
+          <span class="status-pill">MySQL: <b id="mysqlVersion"></b></span>
+          <span class="status-pill alert-pill" id="physicalPill" hidden>物理 FK 异常: <b id="physicalCount">0</b></span>
+          <span class="status-pill">注释逻辑 FK: <b id="standardLogicCount">0</b></span>
+          <span class="status-pill" id="polyPill" hidden>多态逻辑 FK: <b id="polyCount">0</b></span>
+          <span class="status-pill alert-pill" id="weakPill" hidden>非规范关联注释: <b id="weakCount">0</b></span>
+          <span class="status-pill">schema_hash: <b id="schemaHash"></b></span>
+        </div>
+      </header>
+      <section class="stage-wrap">
+        <div class="stage" id="stage">
+          <div class="world" id="world">
+            <svg class="edges" id="edges" viewBox="0 0 2300 2400" aria-hidden="true"></svg>
+            <div id="domains"></div>
+            <div id="externalBoundaries"></div>
+            <div id="nodes"></div>
+          </div>
+          <div class="detail" id="detail" tabindex="0"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script type="application/json" id="schemaSnapshot">__SCHEMA_SNAPSHOT_JSON__</script>
+  <script>
+    const schemaSnapshot = JSON.parse(document.getElementById("schemaSnapshot").textContent);
+    const summary = schemaSnapshot.summary;
+    const tables = schemaSnapshot.tables.map((table) => ({
+      id: table.schema + "." + table.name,
+      schema: table.schema,
+      name: table.name,
+      cn: table.comment || table.name,
+      engine: table.engine || "",
+      rows: table.rows,
+      domain: inferDomain(table),
+      columns: table.columns || [],
+      indexes: table.indexes || [],
+      physical_fks: table.physical_fks || [],
+      standard_logical_fks: table.standard_logical_fks || [],
+      polymorphic_logical_fks: table.polymorphic_logical_fks || [],
+      weak_comment_relations: table.weak_comment_relations || []
+    }));
+    const tableByName = new Map(tables.map((table) => [table.name, table]));
+    const tableById = new Map(tables.map((table) => [table.id, table]));
+    const relations = [];
+    for (const table of tables) {
+      for (const relation of table.standard_logical_fks) addRelation(table, relation, "standard");
+    }
+    const state = { view: "domain", zoom: 0.82, panX: 22, panY: 10, selected: null, search: "" };
+
+    function inferDomain(table) {
+      const name = table.name.toLowerCase();
+      const text = `${table.name} ${table.comment || ""}`.toLowerCase();
+      if (/rag|vector|embedding|chunk/.test(text)) return "RAG 与向量";
+      if (/artifact|oss|file|attach|产物|文件/.test(name)) return "产物与文件";
+      if (/skill|expert|mcp|rel_expert_skill/.test(name)) return "专家与技能";
+      if (/chat|message|session_feedback|agent_run/.test(name)) return "对话闭环";
+      if (/llm|model|credential|usage/.test(name)) return "模型与调用";
+      if (/user|auth|account|profile|notification/.test(name)) return "用户与登录";
+      if (/config|feature_flag/.test(name)) return "系统配置";
+      return "其他";
+    }
+
+    function addRelation(sourceTable, relation, type) {
+      const target = tableByName.get(relation.target_table);
+      if (!target) return;
+      relations.push({
+        from: sourceTable.id,
+        to: target.id,
+        fromField: relation.column,
+        toField: relation.target_column,
+        type,
+        comment: relation.comment || ""
+      });
+    }
+
+    function domainList() {
+      const preferred = ["用户与登录", "对话闭环", "模型与调用", "专家与技能", "产物与文件", "系统配置", "RAG 与向量", "其他"];
+      const set = new Set(tables.map((table) => table.domain));
+      return preferred.filter((item) => set.has(item));
+    }
+
+    function makeLayout(view) {
+      const positions = {};
+      const domains = [];
+      const externals = [];
+      const NODE_W = 240;
+      const GAP_Y = 286;
+      if (view === "storage") {
+        const rows = Math.ceil(tables.length / 4);
+        const mysqlHeight = Math.max(820, 72 + rows * GAP_Y + 54);
+        domains.push(["MySQL 实测业务表", 55, 52, 1410, mysqlHeight]);
+        externals.push(["PostgreSQL + pgvector", "RAG、embedding、向量检索候选落点；只有真实 schema 存在表时才生成表节点。", 1530, 70, 500, 170, "pg"]);
+        externals.push(["OSS", "文件本体、附件、产物落点；数据库只展示引用字段。", 1530, 280, 500, 160, "oss"]);
+        externals.push(["ELK", "日志、Trace、错误排障、应用观测落点；不伪造成数据库表。", 1530, 480, 500, 160, "elk"]);
+        externals.push(["Redis", "Session 运行态、SSE 中断状态、pub/sub；不是业务真源。", 1530, 680, 500, 160, "redis"]);
+        placeGrid(tables, positions, 95, 130, 4, 330, GAP_Y);
+        return { domains, externals, positions };
+      }
+      if (view === "compact") {
+        domains.push([`MySQL ${summary.database}`, 60, 70, 1540, 560]);
+        domains.push(["外部数据职责边界", 60, 705, 1540, 190]);
+        externals.push(["PGVector / OSS / ELK / Redis", "外部数据落点存在于架构边界；本图只把真实读取到的表画成表节点。", 970, 755, 560, 90, "pg"]);
+        placeGrid(tables, positions, 105, 150, 4, 300, 124);
+        return { domains, externals, positions };
+      }
+      const blockW = 1040;
+      const blockGapX = 70;
+      const blockGapY = 56;
+      const columnY = [58, 58];
+      domainList().forEach((domain) => {
+        const items = tables.filter((table) => table.domain === domain);
+        const cols = items.length >= 5 ? 3 : Math.min(2, Math.max(1, items.length));
+        const rows = Math.max(1, Math.ceil(items.length / cols));
+        const height = Math.max(300, 72 + rows * GAP_Y + 54);
+        const column = columnY[0] <= columnY[1] ? 0 : 1;
+        const x = 60 + column * (blockW + blockGapX);
+        const y = columnY[column];
+        const gapX = cols <= 1 ? 0 : (blockW - 90 - NODE_W) / (cols - 1);
+        domains.push([domain, x, y, blockW, height]);
+        placeGrid(items, positions, x + 45, y + 72, cols, gapX, GAP_Y);
+        columnY[column] += height + blockGapY;
+      });
+      return { domains, externals, positions };
+    }
+
+    function placeGrid(items, positions, startX, startY, columns, gapX, gapY) {
+      items.forEach((item, index) => {
+        positions[item.id] = [startX + (index % columns) * gapX, startY + Math.floor(index / columns) * gapY];
+      });
+    }
+
+    function viewMeta() {
+      const layout = makeLayout(state.view);
+      const titles = {
+        domain: ["业务域分区图", "按实测表名与字段语义分区；关系线只来自注释逻辑 FK。"],
+        storage: ["数据落点与协作图", "MySQL 展示本次真实表；PostgreSQL+pgvector、OSS、ELK、Redis 只作为外部职责边界说明。"],
+        compact: ["演示紧凑图", "压缩为一屏查看的 schema 版本，只保留注释逻辑 FK 关系线。"]
+      };
+      return { title: titles[state.view][0], desc: titles[state.view][1], ...layout };
+    }
+
+    function esc(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[char]));
+    }
+
+    function shortStore() { return "MySQL " + (summary.mysql_version || ""); }
+
+    function relationLabel(type) {
+      if (type === "standard") return "注释逻辑 FK";
+      return type;
+    }
+
+    function renderMetrics() {
+      const metrics = [
+        [summary.table_count, "表数"],
+        [summary.field_count, "字段数"],
+        [summary.index_count, "索引数"],
+        [summary.standard_logical_fk_count, "注释逻辑 FK"]
+      ];
+      if (summary.polymorphic_logical_fk_count > 0) metrics.push([summary.polymorphic_logical_fk_count, "多态逻辑 FK"]);
+      if (summary.physical_fk_count > 0) metrics.push([summary.physical_fk_count, "物理 FK 异常", "alert"]);
+      if (summary.weak_comment_relation_count > 0) metrics.push([summary.weak_comment_relation_count, "非规范关联注释", "alert"]);
+      document.getElementById("metrics").innerHTML = metrics.map(([value, label, tone]) => `<div class="metric ${tone || ""}"><b>${esc(value)}</b><span>${esc(label)}</span></div>`).join("");
+      document.getElementById("databaseName").textContent = summary.database;
+      document.getElementById("mysqlVersion").textContent = summary.mysql_version || "未知";
+      document.getElementById("physicalCount").textContent = String(summary.physical_fk_count);
+      document.getElementById("physicalPill").hidden = !(summary.physical_fk_count > 0);
+      document.getElementById("standardLogicCount").textContent = String(summary.standard_logical_fk_count);
+      document.getElementById("polyCount").textContent = String(summary.polymorphic_logical_fk_count || 0);
+      document.getElementById("polyPill").hidden = !(summary.polymorphic_logical_fk_count > 0);
+      document.getElementById("weakCount").textContent = String(summary.weak_comment_relation_count);
+      document.getElementById("weakPill").hidden = !(summary.weak_comment_relation_count > 0);
+      document.getElementById("schemaHash").textContent = summary.schema_hash;
+      document.getElementById("docTitle").textContent = "全局 ER 图";
+    }
+
+    function isMatch(table) {
+      if (!state.search.trim()) return true;
+      const needle = state.search.trim().toLowerCase();
+      return [table.name, table.cn, table.schema, table.domain, ...table.columns.flatMap((column) => Object.values(column))].join(" ").toLowerCase().includes(needle);
+    }
+
+    function relatedIds(id) {
+      const related = new Set([id]);
+      for (const relation of relations) {
+        if (relation.from === id) related.add(relation.to);
+        if (relation.to === id) related.add(relation.from);
+      }
+      return related;
+    }
+
+    function fieldHtml(table, column) {
+      const hasLogicalFk = table.standard_logical_fks.some((relation) => relation.column === column.name);
+      const hasPolymorphicFk = table.polymorphic_logical_fks.some((relation) => relation.column === column.name);
+      const keyClass = column.key === "PRI" ? "pk" : column.key === "UNI" ? "uk" : hasLogicalFk || hasPolymorphicFk ? "weak" : "";
+      const keyLabel = column.key === "PRI" ? "P" : column.key === "UNI" ? "U" : hasLogicalFk || hasPolymorphicFk ? "F" : "";
+      return `<div class="field" title="${esc(column.comment)}"><span class="key ${keyClass}">${keyLabel}</span><span class="field-name">${esc(column.name)}</span><span class="field-type">${esc(column.type)}</span></div>`;
+    }
+
+    function renderDomains() {
+      const meta = viewMeta();
+      document.getElementById("domains").innerHTML = meta.domains.map((domain) => `<section class="domain" style="left:${domain[1]}px;top:${domain[2]}px;width:${domain[3]}px;height:${domain[4]}px"><h3>${esc(domain[0])}</h3></section>`).join("");
+      document.getElementById("externalBoundaries").innerHTML = meta.externals.map((item) => `<section class="external-boundary" style="left:${item[2]}px;top:${item[3]}px;width:${item[4]}px;height:${item[5]}px"><h3>${esc(item[0])}</h3><div class="external-note">${esc(item[1])}</div></section>`).join("");
+    }
+
+    function renderNodes() {
+      const meta = viewMeta();
+      const related = state.selected ? relatedIds(state.selected) : null;
+      document.getElementById("nodes").innerHTML = tables.map((table) => {
+        const position = meta.positions[table.id] || [80, 80];
+        const dim = !isMatch(table) || (related && !related.has(table.id));
+        const selected = state.selected === table.id;
+        return `<article class="node ${dim ? "dim" : ""} ${selected ? "selected" : ""}" data-id="${esc(table.id)}" style="left:${position[0]}px;top:${position[1]}px"><header class="node-header"><div><h3 class="node-title">${esc(table.name)}</h3><div class="node-caption">${esc(table.cn)}</div></div><span class="badge">${esc(table.engine || "table")}</span></header><div class="fields">${table.columns.map((column) => fieldHtml(table, column)).join("")}</div><footer class="node-footer"><span>${esc(table.domain)}</span><span>${table.indexes.length} 个索引</span></footer></article>`;
+      }).join("");
+      document.querySelectorAll(".node").forEach((node) => node.addEventListener("click", (event) => {
+        event.stopPropagation();
+        state.selected = node.dataset.id;
+        renderAll();
+      }));
+    }
+
+    function edgePath(from, to) {
+      const nodeWidth = state.view === "compact" ? 220 : 240;
+      const fromX = from[0] + nodeWidth;
+      const fromY = from[1] + 62;
+      const toX = to[0];
+      const toY = to[1] + 62;
+      const dx = Math.max(80, Math.abs(toX - fromX) * 0.42);
+      return `M ${fromX} ${fromY} C ${fromX + dx} ${fromY}, ${toX - dx} ${toY}, ${toX} ${toY}`;
+    }
+
+    function renderEdges() {
+      const meta = viewMeta();
+      const related = state.selected ? relatedIds(state.selected) : null;
+      const lines = relations.map((relation) => {
+        const from = meta.positions[relation.from];
+        const to = meta.positions[relation.to];
+        if (!from || !to) return "";
+        const highlight = state.selected && (relation.from === state.selected || relation.to === state.selected);
+        const opacity = state.selected ? (highlight ? 1 : 0.10) : 0.54;
+        const midX = (from[0] + to[0]) / 2 + 130;
+        const midY = (from[1] + to[1]) / 2 + 62;
+        return `<path class="edge ${relation.type} ${highlight ? "highlight" : ""}" opacity="${opacity}" d="${edgePath(from, to)}"></path>${highlight ? `<text class="edge-label" x="${midX}" y="${midY}">${esc(relation.fromField)} -> ${esc(tableById.get(relation.to).name)}.${esc(relation.toField)}</text>` : ""}`;
+      }).join("");
+      document.getElementById("edges").innerHTML = lines;
+    }
+
+    function renderDetail() {
+      const detail = document.getElementById("detail");
+      if (!state.selected) {
+        detail.innerHTML = `<h3>选择一张表</h3><p>点击表节点后显示字段、索引和注释逻辑 FK。拖拽空白区域平移，滚轮或按钮缩放。</p><div class="empty">当前库 ${esc(summary.database)}：${summary.table_count} 表，${summary.field_count} 字段，注释逻辑 FK ${summary.standard_logical_fk_count}。</div>`;
+        return;
+      }
+      const table = tableById.get(state.selected);
+      const out = relations.filter((relation) => relation.from === table.id);
+      const inn = relations.filter((relation) => relation.to === table.id);
+      const polymorphic = table.polymorphic_logical_fks || [];
+      const nonstandard = table.weak_comment_relations || [];
+      const polyText = polymorphic.length ? polymorphic.map((relation) => `${esc(relation.column)}：${(relation.targets || []).map((target) => `${esc(target.condition)} -> ${esc(target.target_table)}.${esc(target.target_column)}`).join("；")}`).join("；") : "无";
+      detail.innerHTML = `<h3>${esc(table.name)}</h3><p>${esc(table.cn)}。存储：${esc(shortStore())}；引擎：${esc(table.engine)}；业务域：${esc(table.domain)}。</p><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>${table.columns.map((column) => `<tr><td><code>${esc(column.name)}</code></td><td>${esc(column.type)}</td><td>${esc(column.comment || "")}</td></tr>`).join("")}</tbody></table><p style="margin-top:12px"><strong>出向关系</strong>：${out.length ? out.map((relation) => `${esc(relationLabel(relation.type))} ${esc(relation.fromField)} -> ${esc(tableById.get(relation.to).name)}.${esc(relation.toField)}`).join("；") : "无"}</p><p><strong>多态逻辑 FK</strong>：${polyText}</p><p><strong>入向关系</strong>：${inn.length ? inn.map((relation) => `${esc(tableById.get(relation.from).name)}.${esc(relation.fromField)}`).join("；") : "无"}</p><p><strong>索引</strong>：${table.indexes.length ? table.indexes.map((index) => `${esc(index.name)}(${esc((index.columns || []).join(", "))})`).join(" / ") : "无"}</p><p><strong>非规范关联注释</strong>：${nonstandard.length ? nonstandard.map((relation) => `${esc(relation.column)}：${esc(relation.comment)}`).join("；") : "无"}</p>`;
+    }
+
+    function renderList() {
+      document.getElementById("tableList").innerHTML = tables.map((table) => `<button class="list-button" data-id="${esc(table.id)}"><strong>${esc(table.name)}</strong><span>${esc(table.domain)}</span></button>`).join("");
+      document.querySelectorAll(".list-button").forEach((button) => button.addEventListener("click", () => {
+        state.selected = button.dataset.id;
+        renderAll();
+      }));
+    }
+
+    function applyTransform() {
+      const world = document.getElementById("world");
+      world.className = `world view-${state.view}`;
+      world.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
+    }
+
+    function renderTopbar() {
+      const meta = viewMeta();
+      document.getElementById("viewTitle").textContent = meta.title;
+      document.getElementById("viewDesc").textContent = meta.desc;
+    }
+
+    function renderAll() {
+      renderTopbar();
+      renderMetrics();
+      renderDomains();
+      renderEdges();
+      renderNodes();
+      renderDetail();
+      renderList();
+      applyTransform();
+    }
+
+    document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => {
+      document.querySelectorAll("[data-view]").forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+      state.view = button.dataset.view;
+      state.selected = null;
+      renderAll();
+    }));
+    document.querySelectorAll("[data-zoom]").forEach((button) => button.addEventListener("click", () => {
+      if (button.dataset.zoom === "in") state.zoom = Math.min(1.35, state.zoom + 0.08);
+      if (button.dataset.zoom === "out") state.zoom = Math.max(0.45, state.zoom - 0.08);
+      if (button.dataset.zoom === "reset") state.zoom = 1;
+      applyTransform();
+    }));
+    document.querySelector("[data-action='fit']").addEventListener("click", () => {
+      state.zoom = 0.64;
+      state.panX = 12;
+      state.panY = 10;
+      applyTransform();
+    });
+    document.getElementById("search").addEventListener("input", (event) => {
+      state.search = event.target.value;
+      renderNodes();
+    });
+    const stage = document.getElementById("stage");
+    let dragging = false, startX = 0, startY = 0, originalX = 0, originalY = 0;
+    stage.addEventListener("pointerdown", (event) => {
+      if (event.target.closest(".node") || event.target.closest(".detail")) return;
+      dragging = true;
+      stage.classList.add("dragging");
+      startX = event.clientX;
+      startY = event.clientY;
+      originalX = state.panX;
+      originalY = state.panY;
+      stage.setPointerCapture(event.pointerId);
+    });
+    stage.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+      state.panX = originalX + event.clientX - startX;
+      state.panY = originalY + event.clientY - startY;
+      applyTransform();
+    });
+    stage.addEventListener("pointerup", (event) => {
+      dragging = false;
+      stage.classList.remove("dragging");
+      stage.releasePointerCapture(event.pointerId);
+    });
+    stage.addEventListener("wheel", (event) => {
+      if (event.target.closest(".detail")) return;
+      event.preventDefault();
+      state.zoom = Math.max(0.42, Math.min(1.45, state.zoom + (event.deltaY > 0 ? -0.05 : 0.05)));
+      applyTransform();
+    }, { passive: false });
+    document.getElementById("detail").addEventListener("wheel", (event) => event.stopPropagation(), { passive: true });
+    document.getElementById("detail").addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+      event.currentTarget.focus();
+    });
+    stage.addEventListener("click", (event) => {
+      if (event.target === stage) {
+        state.selected = null;
+        renderAll();
+      }
+    });
+    renderAll();
+  </script>
+</body>
+</html>
