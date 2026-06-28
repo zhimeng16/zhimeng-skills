@@ -7,6 +7,7 @@
 ## 当前 Skill
 
 - `goal-command-writer`：把任务收敛成可复制的 `/目标` 或 `/goal` 指令。
+- `daily-report`：从 AI 对话、TickTick、Git 采集记录，生成柳比歇夫格式日报。
 - `jdbc-er-html`：通过 JDBC 读取 MySQL schema，生成并校验交互式 ER HTML。
 - `zhimeng-architecture-diagram`：生成高信息密度、固定版式的系统架构图 HTML。
 - `zhimeng-fusion`：同题并行多 Agent 协商，用于方案、选型、架构和高风险判断。

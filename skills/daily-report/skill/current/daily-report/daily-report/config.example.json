@@ -1,0 +1,19 @@
+{
+  "cursor_projects_dir": "~/.cursor/projects",
+  "claude_dir": "~/.claude",
+  "codex_dir": "~/.codex",
+  "ticktick_cli": ".claude/skills/ticktick/ticktick_cli/ticktick_cli.py",
+  "ticktick_cache_dir": ".claude/skills/daily-report/daily-report/cache/ticktick",
+  "code_dirs": [
+    "~/Code"
+  ],
+  "output_dir": "./40-个人/日记",
+  "timezone_offset_hours": 8,
+  "llm": {
+    "provider": "local_summary",
+    "codex_bin": "/Applications/Codex.app/Contents/Resources/codex",
+    "codex_workdir": ".",
+    "timeout": 900
+  },
+  "fail_on_generation_error": true
+}
